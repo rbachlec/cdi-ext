@@ -1,1 +1,2 @@
 net.phalanxx.cdiext.scope.DestroyableSingletonExtension
+net.phalanxx.cdiext.factory.FactoryExtension
