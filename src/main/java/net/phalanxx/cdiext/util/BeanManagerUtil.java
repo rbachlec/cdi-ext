@@ -1,5 +1,6 @@
 package net.phalanxx.cdiext.util;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
@@ -39,12 +40,14 @@ public class BeanManagerUtil {
      *
      * @param beanManager The bean manager with which to perform the lookup.
      * @param type The class for which to return an instance.
+     * @param qualifiers List of qualifier annotations
      * @return The managed instance, or null if none could be provided.
      */
     @SuppressWarnings("unchecked")
-    public static <T> T getContextualInstance(final BeanManager beanManager, final Class<T> type) {
+    public static <T> T getContextualInstance(final BeanManager beanManager, final Class<T> type,
+                                              Annotation... qualifiers) {
         T result = null;
-        Bean<T> bean = (Bean<T>) beanManager.resolve(beanManager.getBeans(type));
+        Bean<T> bean = (Bean<T>) beanManager.resolve(beanManager.getBeans(type, qualifiers));
         if (bean != null) {
             CreationalContext<T> context = beanManager.createCreationalContext(bean);
             if (context != null) {
@@ -59,11 +62,12 @@ public class BeanManagerUtil {
      * {@link List} in no specific order.
      *
      * @param type The class for which to return instances.
+     * @param qualifiers List of qualifier annotations
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T> getContextualInstances(final Class<T> type) {
+    public <T> List<T> getContextualInstances(final Class<T> type, Annotation... qualifiers) {
         List<T> result = new ArrayList<>();
-        for (Bean<?> bean : beanManager.getBeans(type)) {
+        for (Bean<?> bean : beanManager.getBeans(type, qualifiers)) {
             CreationalContext<T> context = (CreationalContext<T>) beanManager.createCreationalContext(bean);
             if (context != null) {
                 result.add((T) beanManager.getReference(bean, type, context));
@@ -96,5 +100,5 @@ public class BeanManagerUtil {
         CreationalContext<T> creationalContext = beanManager.createCreationalContext(null);
         target.inject(object, creationalContext);
     }
-    
+
 }

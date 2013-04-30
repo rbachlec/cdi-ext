@@ -7,12 +7,12 @@ import java.lang.annotation.Target;
 import javax.inject.Scope;
 
 /**
- * Scope containing singletons that can be destroyed manually by using an injected
- * instance of {@link DestroyableSingletonContext}.
+ * Scope containing singletons that can be disposed manually by using an injected
+ * instance of {@link DisposeableSingletonContext}.
  *
  * @author rbachlec
  */
 @Scope
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE,ElementType.METHOD})
-public @interface DestroyableSingleton {}
+public @interface DisposeableSingleton {}

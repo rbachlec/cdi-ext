@@ -7,18 +7,18 @@ import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
 
 /**
- * CDI extension registering the {@link DestroyableSingleton} scope.
+ * CDI extension registering the {@link DisposeableSingleton} scope.
  *
  * @author rbachlec
  */
-public class DestroyableSingletonExtension implements Extension {
+public class DisposeableSingletonExtension implements Extension {
 
     public void beforeBeanDiscovery(@Observes BeforeBeanDiscovery bbd, BeanManager bm) {
-        bbd.addScope(DestroyableSingleton.class, false, false);
+        bbd.addScope(DisposeableSingleton.class, false, false);
     }
 
     public void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager bm) {
-        abd.addContext(new DestroyableSingletonContextImpl());
+        abd.addContext(new DisposeableSingletonContextImpl());
     }
 
 }
