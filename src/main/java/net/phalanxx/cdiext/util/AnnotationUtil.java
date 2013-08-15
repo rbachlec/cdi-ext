@@ -3,9 +3,11 @@ package net.phalanxx.cdiext.util;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.util.AnnotationLiteral;
 
 /**
  *
@@ -13,7 +15,8 @@ import javax.enterprise.inject.spi.BeanManager;
  */
 public class AnnotationUtil {
 
-    public static <T extends Annotation> T getAnnotation(AnnotatedType annotatedType, BeanManager beanManager,
+    @SuppressWarnings("unchecked")
+    public static <T extends Annotation> T getAnnotation(AnnotatedType<?> annotatedType, BeanManager beanManager,
                                                          final Class<T> annotationType) {
         Set<Annotation> annotations = findAnnotations(annotatedType, beanManager, new AnnotationFilter() {
             @Override
@@ -25,12 +28,12 @@ public class AnnotationUtil {
         return (T) (annotations.isEmpty() ? null : annotations.toArray()[0]);
     }
 
-    public static boolean isAnnotationPresent(AnnotatedType annotatedType, BeanManager beanManager,
+    public static boolean isAnnotationPresent(AnnotatedType<?> annotatedType, BeanManager beanManager,
                                               Class<? extends Annotation> annotationType) {
         return getAnnotation(annotatedType, beanManager, annotationType) != null;
     }
 
-    public static Annotation getScope(AnnotatedType annotatedType, final BeanManager beanManager) {
+    public static Annotation getScope(AnnotatedType<?> annotatedType, final BeanManager beanManager) {
         Set<Annotation> annotations = findAnnotations(annotatedType, beanManager, new AnnotationFilter() {
             @Override
             public boolean matches(Annotation annotation) {
@@ -38,10 +41,10 @@ public class AnnotationUtil {
             }
         }, true);
 
-        return (Annotation) (annotations.isEmpty() ? Dependent.class : annotations.toArray()[0]);
+        return (Annotation) (annotations.isEmpty() ? new AnnotationLiteral<Dependent>() {} : annotations.toArray()[0]);
     }
 
-    public static Set<Annotation> getStereotypes(AnnotatedType annotatedType, final BeanManager beanManager) {
+    public static Set<Annotation> getStereotypes(AnnotatedType<?> annotatedType, final BeanManager beanManager) {
         Set<Annotation> annotations = findAnnotations(annotatedType, beanManager, new AnnotationFilter() {
             @Override
             public boolean matches(Annotation annotation) {
@@ -52,7 +55,7 @@ public class AnnotationUtil {
         return annotations;
     }
 
-    public static Set<Annotation> getQualifiers(AnnotatedType annotatedType, final BeanManager beanManager) {
+    public static Set<Annotation> getQualifiers(AnnotatedType<?> annotatedType, final BeanManager beanManager) {
         Set<Annotation> annotations = findAnnotations(annotatedType, beanManager, new AnnotationFilter() {
             @Override
             public boolean matches(Annotation annotation) {
@@ -72,7 +75,7 @@ public class AnnotationUtil {
      * @param unique there can only be one matching annotation
      * @return list of matching annotations
      */
-    private static Set<Annotation> findAnnotations(AnnotatedType annotatedType, BeanManager beanManager,
+    private static Set<Annotation> findAnnotations(AnnotatedType<?> annotatedType, BeanManager beanManager,
                                                    AnnotationFilter filter, Boolean unique) {
         Set<Annotation> matchingAnnotations = new HashSet<>();
 
