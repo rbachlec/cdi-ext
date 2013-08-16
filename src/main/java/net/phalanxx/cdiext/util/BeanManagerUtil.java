@@ -3,6 +3,7 @@ package net.phalanxx.cdiext.util;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -26,10 +27,11 @@ public class BeanManagerUtil {
      * available.
      *
      * @param type The class for which to return an instance.
+     * @param qualifiers List of qualifier annotations
      * @return The managed instance, or null if none could be provided.
      */
-    public <T> T getContextualInstance(final Class<T> type) {
-        return getContextualInstance(beanManager, type);
+    public <T> T getContextualInstance(final Class<T> type, Annotation... qualifiers) {
+        return getContextualInstance(beanManager, type, qualifiers);
     }
 
     /**
@@ -50,9 +52,7 @@ public class BeanManagerUtil {
         Bean<T> bean = (Bean<T>) beanManager.resolve(beanManager.getBeans(type, qualifiers));
         if (bean != null) {
             CreationalContext<T> context = beanManager.createCreationalContext(bean);
-            if (context != null) {
-                result = (T) beanManager.getReference(bean, type, context);
-            }
+            result = (T) beanManager.getReference(bean, type, context);
         }
         return result;
     }
@@ -69,9 +69,7 @@ public class BeanManagerUtil {
         List<T> result = new ArrayList<>();
         for (Bean<?> bean : beanManager.getBeans(type, qualifiers)) {
             CreationalContext<T> context = (CreationalContext<T>) beanManager.createCreationalContext(bean);
-            if (context != null) {
-                result.add((T) beanManager.getReference(bean, type, context));
-            }
+            result.add((T) beanManager.getReference(bean, type, context));
         }
         return result;
     }
