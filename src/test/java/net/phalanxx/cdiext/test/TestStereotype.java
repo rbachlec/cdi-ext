@@ -1,4 +1,4 @@
-package net.phalanxx.cdiext.factory;
+package net.phalanxx.cdiext.test;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,6 +10,6 @@ import javax.enterprise.inject.Stereotype;
 @Stereotype
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface StereotypeForTest {
+public @interface TestStereotype {
     // just a stereotype for testing purposes
 }

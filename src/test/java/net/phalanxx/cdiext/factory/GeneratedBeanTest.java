@@ -18,9 +18,17 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.InjectionTarget;
-import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import net.phalanxx.cdiext.test.AbstractTestBean;
+import net.phalanxx.cdiext.test.ApplicationScopedBean;
+import net.phalanxx.cdiext.test.ApplicationScopedBeanProducedByFactory;
+import net.phalanxx.cdiext.test.DependentScopedBean;
+import net.phalanxx.cdiext.test.NamedBean;
+import net.phalanxx.cdiext.test.StereotypedBeanWithInjectionPoint;
+import net.phalanxx.cdiext.test.TestFactory;
+import net.phalanxx.cdiext.test.TestStereotype;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -34,52 +42,52 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class GeneratedBeanTest {
 
-    @Inject private BeanManager beanManager;
-    @Inject private ClassWithAStereotype classWithAStereotype;
+    @Inject private BeanManager                       beanManager;
 
-    private Bean<ClassWithAStereotype> classWithAStereotypeBean;
-    private Bean<ClassWithApplicationScope> classWithApplicationScopeBean;
-    private Bean<Opel> classWithAFactory;
+    @Inject private StereotypedBeanWithInjectionPoint stereotyped;
+
+    private Bean<ApplicationScopedBeanProducedByFactory> applicationScopedBeanProducedByFactory;
+    private Bean<ApplicationScopedBean>                  applicationScopedBean;
+    private Bean<DependentScopedBean>                    dependentScopedBean;
+    private Bean<StereotypedBeanWithInjectionPoint>      stereotypedBeanWithInjectionPoint;
+    private Bean<NamedBean>                              namedBean;
 
     @Deployment
     public static JavaArchive createDeployment() {
         return ShrinkWrap.create(JavaArchive.class)
-                         .addClass(GeneratedBean.class)
-                         .addClass(ClassWithAStereotype.class)
-                         .addClass(ClassWithApplicationScope.class)
-                         .addClass(Opel.class)
-                         .addClass(CarFactory.class)
-                         .addClass(AnnotationLiteral.class)
+                         .addPackage(TestFactory.class.getPackage())
                          .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Before
     public void setUp() {
-        classWithAStereotypeBean = createGeneratedBean(ClassWithAStereotype.class);
-        classWithApplicationScopeBean = createGeneratedBean(ClassWithApplicationScope.class);
-        classWithAFactory = createGeneratedBean(Opel.class);
+        applicationScopedBeanProducedByFactory = createGeneratedBean(ApplicationScopedBeanProducedByFactory.class);
+        applicationScopedBean                  = createGeneratedBean(ApplicationScopedBean.class);
+        dependentScopedBean                    = createGeneratedBean(DependentScopedBean.class);
+        stereotypedBeanWithInjectionPoint                        = createGeneratedBean(StereotypedBeanWithInjectionPoint.class);
+        namedBean                              = createGeneratedBean(NamedBean.class);
     }
 
 
     @Test
     public void getStereotypes() {
-        Set<Class<? extends Annotation>> stereotypes = classWithAStereotypeBean.getStereotypes();
+        Set<Class<? extends Annotation>> stereotypes = stereotypedBeanWithInjectionPoint.getStereotypes();
         assertThat(stereotypes).isNotEmpty();
         assertThat(stereotypes.size()).isEqualTo(1);
-        assertThat(stereotypes).contains(StereotypeForTest.class);
+        assertThat(stereotypes).contains(TestStereotype.class);
     }
 
     @Test
     public void getTypes() {
-        Set<Type> types = classWithAStereotypeBean.getTypes();
+        Set<Type> types = stereotypedBeanWithInjectionPoint.getTypes();
         assertThat(types).isNotEmpty();
-        assertThat(types.size()).isEqualTo(2);
-        assertThat(types).contains(ClassWithAStereotype.class, Object.class);
+        assertThat(types.size()).isEqualTo(3);
+        assertThat(types).contains(StereotypedBeanWithInjectionPoint.class, AbstractTestBean.class, Object.class);
     }
 
     @Test
     public void getQualifiers() {
-        Set<Annotation> qualifiers = classWithAStereotypeBean.getQualifiers();
+        Set<Annotation> qualifiers = namedBean.getQualifiers();
         assertThat(qualifiers).isNotEmpty();
         assertThat(qualifiers.size()).isEqualTo(3);
 
@@ -89,75 +97,77 @@ public class GeneratedBeanTest {
 
     @Test
     public void getScopeDependent() {
-        Class<? extends Annotation> scope = classWithAStereotypeBean.getScope();
+        Class<? extends Annotation> scope = dependentScopedBean.getScope();
         assertThat(scope).isNotNull();
         assertThat(scope).isEqualTo(Dependent.class);
     }
 
     @Test
     public void getScopeApplicationScoped() {
-        Class<? extends Annotation> scope = classWithApplicationScopeBean.getScope();
+        Class<? extends Annotation> scope = applicationScopedBean.getScope();
         assertThat(scope).isNotNull();
         assertThat(scope).isEqualTo(ApplicationScoped.class);
     }
 
     @Test
     public void getName() {
-        String name = classWithAStereotypeBean.getName();
+        String name = namedBean.getName();
         assertThat(name).isNotNull();
-        assertThat(name).isEqualTo("ClassWithAStereotype");
+        assertThat(name).isEqualTo("SpecialBean");
     }
 
     @Test
     public void getNameNotFound() {
-        String name = classWithApplicationScopeBean.getName();
+        String name = applicationScopedBean.getName();
         assertThat(name).isNull();
     }
 
     @Test
     public void getBeanType() {
-        Class<?> beanClass = classWithAStereotypeBean.getBeanClass();
+        Class<?> beanClass = stereotypedBeanWithInjectionPoint.getBeanClass();
         assertThat(beanClass).isNotNull();
-        assertThat(beanClass).isEqualTo(ClassWithAStereotype.class);
+        assertThat(beanClass).isEqualTo(StereotypedBeanWithInjectionPoint.class);
     }
 
     @Test
     public void isAlternative() {
-        boolean isAlternative = classWithAStereotypeBean.isAlternative();
+        boolean isAlternative = applicationScopedBean.isAlternative();
         assertThat(isAlternative).isFalse();
     }
 
     @Test
     public void isNullable() {
-        boolean isNullable = classWithAStereotypeBean.isNullable();
+        boolean isNullable = applicationScopedBean.isNullable();
         assertThat(isNullable).isFalse();
     }
 
     @Test
     public void getInjectionPoints() {
-        Set<InjectionPoint> injectionPoints = classWithAStereotypeBean.getInjectionPoints();
+        Set<InjectionPoint> injectionPoints = stereotypedBeanWithInjectionPoint.getInjectionPoints();
         assertThat(injectionPoints).isNotEmpty();
         assertThat(injectionPoints.size()).isEqualTo(1);
     }
 
     @Test
     public void create() {
-        CreationalContext<Opel> creationalContext = beanManager.createCreationalContext(classWithAFactory);
-        Opel opel = classWithAFactory.create(creationalContext);
-        assertThat(opel).isNotNull();
+        CreationalContext<ApplicationScopedBeanProducedByFactory> creationalContext =
+                beanManager.createCreationalContext(applicationScopedBeanProducedByFactory);
+        ApplicationScopedBeanProducedByFactory theBean = applicationScopedBeanProducedByFactory.create(creationalContext);
+        assertThat(theBean).isNotNull();
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void createThrowsExceptionOnClassWithoutFactory() {
-        CreationalContext<ClassWithAStereotype> creationalContext =
-                beanManager.createCreationalContext(classWithAStereotypeBean);
-        classWithAStereotypeBean.create(creationalContext);
+        CreationalContext<StereotypedBeanWithInjectionPoint> creationalContext =
+                beanManager.createCreationalContext(stereotypedBeanWithInjectionPoint);
+        stereotypedBeanWithInjectionPoint.create(creationalContext);
     }
 
     @Test
     public void destroy() {
-        CreationalContext<ClassWithAStereotype> creationalContext = beanManager.createCreationalContext(classWithAStereotypeBean);
-        classWithAStereotypeBean.destroy(classWithAStereotype, creationalContext);
+        CreationalContext<StereotypedBeanWithInjectionPoint> creationalContext =
+                beanManager.createCreationalContext(stereotypedBeanWithInjectionPoint);
+        stereotypedBeanWithInjectionPoint.destroy(stereotyped, creationalContext);
 
     }
 

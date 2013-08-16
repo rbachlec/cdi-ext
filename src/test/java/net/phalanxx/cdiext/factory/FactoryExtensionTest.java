@@ -3,6 +3,14 @@ package net.phalanxx.cdiext.factory;
 import static org.fest.assertions.Assertions.assertThat;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+
+import net.phalanxx.cdiext.test.AbstractTestBean;
+import net.phalanxx.cdiext.test.ApplicationScopedBeanProducedByFactory;
+import net.phalanxx.cdiext.test.DependentScopedBean;
+import net.phalanxx.cdiext.test.DependentScopedBeanProducedByFactory;
+import net.phalanxx.cdiext.test.NamedBeanProducedByFactory;
+import net.phalanxx.cdiext.test.TestFactory;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -15,12 +23,15 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class FactoryExtensionTest {
 
-    @Inject private Opel opel;
-    @Inject private Volkswagen volkswagen;
-    @Inject private Mercedes mercedes;
+    @Inject private ApplicationScopedBeanProducedByFactory applicationScopedBeanProducedByFactory;
+    @Inject private ApplicationScopedBeanProducedByFactory applicationScopedBeanProducedByFactory2;
 
-    @Inject private Opel anotherOpel;
-    @Inject private Volkswagen anotherVolkswagen;
+    @Inject private DependentScopedBeanProducedByFactory dependentScopedBeanProducedByFactory;
+    @Inject private DependentScopedBeanProducedByFactory dependentScopedBeanProducedByFactory2;
+
+    @Inject @Named("SpecialFactoryProducedBean") private AbstractTestBean namedBeanProducedByFactory;
+
+    @Inject private DependentScopedBean dependentScopedBean;
 
     @Deployment
     public static JavaArchive createDeployment() {
@@ -29,43 +40,41 @@ public class FactoryExtensionTest {
                          .addClass(Factory.class)
                          .addClass(FactoryExtension.class)
                          .addClass(GeneratedBean.class)
-                         .addPackage(FactoryExtensionTest.class.getPackage())
+                         .addPackage(TestFactory.class.getPackage())
                          .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @Test
-    public void factoryDeliversOpel() {
-        assertThat(opel).isNotNull();
-        assertThat(opel.getBrand()).isEqualTo(Opel.BRAND);
-        assertThat(opel.getFactoryName()).isEqualTo(CarFactory.FACTORY_NAME);
+    public void factoryProducesAnnotatedBean() {
+        assertThat(applicationScopedBeanProducedByFactory).isNotNull();
+        assertThat(applicationScopedBeanProducedByFactory.getBeanId()).isEqualTo(ApplicationScopedBeanProducedByFactory.BEAN_ID);
+        assertThat(applicationScopedBeanProducedByFactory.getProducedByFactory()).isTrue();
     }
 
     @Test
-    public void factoryDeliversVolkswagen() {
-        assertThat(volkswagen).isNotNull();
-        assertThat(volkswagen.getBrand()).isEqualTo(Volkswagen.BRAND);
-        assertThat(volkswagen.getFactoryName()).isEqualTo(CarFactory.FACTORY_NAME);
+    public void factoryDoesNotProduceBeanIfNotAnnotated() {
+        assertThat(dependentScopedBean).isNotNull();
+        assertThat(dependentScopedBean.getBeanId()).isEqualTo(DependentScopedBean.BEAN_ID);
+        assertThat(dependentScopedBean.getProducedByFactory()).isFalse();
     }
 
     @Test
-    public void factoryDoesNotDeliverMercedes() {
-        assertThat(mercedes).isNotNull();
-        assertThat(mercedes.getBrand()).isEqualTo(Mercedes.BRAND);
-        assertThat(mercedes.getFactoryName()).isNull();
+    public void factoryRespectsScopes() {
+        assertThat(applicationScopedBeanProducedByFactory).isNotNull();
+        assertThat(applicationScopedBeanProducedByFactory2).isNotNull();
+        assertThat(applicationScopedBeanProducedByFactory).isEqualTo(applicationScopedBeanProducedByFactory2);
+
+        assertThat(dependentScopedBeanProducedByFactory).isNotNull();
+        assertThat(dependentScopedBeanProducedByFactory2).isNotNull();
+        assertThat(dependentScopedBeanProducedByFactory).isNotEqualTo(dependentScopedBeanProducedByFactory2);
     }
 
     @Test
-    public void factoryRespectsApplicationScoped() {
-        assertThat(opel).isNotNull();
-        assertThat(anotherOpel).isNotNull();
-        assertThat(opel).isEqualTo(anotherOpel);
-    }
-
-    @Test
-    public void factoryRespectsDependentScoped() {
-        assertThat(volkswagen).isNotNull();
-        assertThat(anotherVolkswagen).isNotNull();
-        assertThat(volkswagen).isNotEqualTo(anotherVolkswagen);
+    public void factoryRespectsQualifiers() {
+        assertThat(namedBeanProducedByFactory).isNotNull();
+        assertThat(namedBeanProducedByFactory instanceof NamedBeanProducedByFactory).isTrue();
+        assertThat(namedBeanProducedByFactory.getBeanId()).isEqualTo(NamedBeanProducedByFactory.BEAN_ID);
+        assertThat(namedBeanProducedByFactory.getProducedByFactory()).isTrue();
     }
 
 }

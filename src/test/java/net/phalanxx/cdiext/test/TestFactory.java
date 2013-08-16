@@ -1,14 +1,14 @@
-package net.phalanxx.cdiext.factory;
+package net.phalanxx.cdiext.test;
 
-public class CarFactory implements Factory {
+import net.phalanxx.cdiext.factory.Factory;
 
-    public static final String FACTORY_NAME = "CarFactory";
+public class TestFactory implements Factory {
 
     @Override
     public <T> T createInstance(Class<T> clazz) {
         try {
             T car = clazz.newInstance();
-            ((Car) car).setFactoryName(FACTORY_NAME);
+            ((AbstractTestBean) car).setProducedByFactory(Boolean.TRUE);
 
             return car;
         } catch (InstantiationException | IllegalAccessException ex) {
