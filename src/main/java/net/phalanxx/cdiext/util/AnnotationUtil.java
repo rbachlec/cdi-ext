@@ -13,7 +13,11 @@ import javax.enterprise.util.AnnotationLiteral;
  *
  * @author rbachlec
  */
-public class AnnotationUtil {
+public final class AnnotationUtil {
+
+    private AnnotationUtil() {
+        // utility class
+    }
 
     @SuppressWarnings("unchecked")
     public static <T extends Annotation> T getAnnotation(AnnotatedType<?> annotatedType, BeanManager beanManager,

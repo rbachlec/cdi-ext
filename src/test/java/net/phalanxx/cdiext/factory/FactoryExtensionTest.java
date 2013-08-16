@@ -5,12 +5,12 @@ import static org.fest.assertions.Assertions.assertThat;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import net.phalanxx.cdiext.test.AbstractTestBean;
-import net.phalanxx.cdiext.test.ApplicationScopedBeanProducedByFactory;
-import net.phalanxx.cdiext.test.DependentScopedBean;
-import net.phalanxx.cdiext.test.DependentScopedBeanProducedByFactory;
-import net.phalanxx.cdiext.test.NamedBeanProducedByFactory;
-import net.phalanxx.cdiext.test.TestFactory;
+import net.phalanxx.cdiext.factory.test.AbstractTestBean;
+import net.phalanxx.cdiext.factory.test.ApplicationScopedBeanProducedByFactory;
+import net.phalanxx.cdiext.factory.test.DependentScopedBean;
+import net.phalanxx.cdiext.factory.test.DependentScopedBeanProducedByFactory;
+import net.phalanxx.cdiext.factory.test.NamedBeanProducedByFactory;
+import net.phalanxx.cdiext.factory.test.TestFactory;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;

@@ -1,4 +1,4 @@
-package net.phalanxx.cdiext.test;
+package net.phalanxx.cdiext.factory.test;
 
 import javax.inject.Inject;
 

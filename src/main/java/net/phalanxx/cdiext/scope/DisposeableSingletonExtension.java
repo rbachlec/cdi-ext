@@ -2,7 +2,6 @@ package net.phalanxx.cdiext.scope;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
 
@@ -13,11 +12,11 @@ import javax.enterprise.inject.spi.Extension;
  */
 public class DisposeableSingletonExtension implements Extension {
 
-    public void beforeBeanDiscovery(@Observes BeforeBeanDiscovery bbd, BeanManager bm) {
+    public void beforeBeanDiscovery(@Observes BeforeBeanDiscovery bbd) {
         bbd.addScope(DisposeableSingleton.class, false, false);
     }
 
-    public void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager bm) {
+    public void afterBeanDiscovery(@Observes AfterBeanDiscovery abd) {
         abd.addContext(new DisposeableSingletonContextImpl());
     }
 

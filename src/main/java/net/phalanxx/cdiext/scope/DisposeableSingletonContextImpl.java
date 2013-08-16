@@ -3,10 +3,12 @@ package net.phalanxx.cdiext.scope;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +39,7 @@ public class DisposeableSingletonContextImpl implements Context {
         if (contextualInstance == null) {
             log.debug("Creating instance of bean " + bean.toString() + ".");
             instance = contextual.create(creationalContext);
-            contextualInstance = new DisposeableSingletonInstance(instance, creationalContext, contextual);
+            contextualInstance = new DisposeableSingletonInstance(instance, creationalContext);
             beanStore.put(bean, contextualInstance);
         } else {
             log.debug("Found existing instance of bean " + bean.toString() + ".");
@@ -50,7 +52,7 @@ public class DisposeableSingletonContextImpl implements Context {
     /** {@inheritDoc} */
     @Override
     public <T> T get(Contextual<T> contextual) {
-         ContextualInstance<?> contextualInstance = beanStore.get((Bean) contextual);
+         ContextualInstance<?> contextualInstance = beanStore.get(contextual);
          return contextualInstance != null ? (T) contextualInstance.getInstance() : null;
     }
 
@@ -111,12 +113,10 @@ public class DisposeableSingletonContextImpl implements Context {
     private class DisposeableSingletonInstance<T> implements ContextualInstance<T> {
         private T instance;
         private CreationalContext<T> creationalContext;
-        private Contextual<T> contextual;
 
-        public DisposeableSingletonInstance(T instance, CreationalContext<T> creationalContext, Contextual<T> contextual) {
+        public DisposeableSingletonInstance(T instance, CreationalContext<T> creationalContext) {
             this.instance = instance;
             this.creationalContext = creationalContext;
-            this.contextual = contextual;
         }
 
         @Override
@@ -127,11 +127,6 @@ public class DisposeableSingletonContextImpl implements Context {
         @Override
         public CreationalContext<T> getCreationalContext() {
             return creationalContext;
-        }
-
-        @Override
-        public Contextual<T> getContextual() {
-            return contextual;
         }
     }
 

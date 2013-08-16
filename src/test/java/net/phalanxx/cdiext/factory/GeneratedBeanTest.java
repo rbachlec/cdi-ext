@@ -21,14 +21,14 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import net.phalanxx.cdiext.test.AbstractTestBean;
-import net.phalanxx.cdiext.test.ApplicationScopedBean;
-import net.phalanxx.cdiext.test.ApplicationScopedBeanProducedByFactory;
-import net.phalanxx.cdiext.test.DependentScopedBean;
-import net.phalanxx.cdiext.test.NamedBean;
-import net.phalanxx.cdiext.test.StereotypedBeanWithInjectionPoint;
-import net.phalanxx.cdiext.test.TestFactory;
-import net.phalanxx.cdiext.test.TestStereotype;
+import net.phalanxx.cdiext.factory.test.AbstractTestBean;
+import net.phalanxx.cdiext.factory.test.ApplicationScopedBean;
+import net.phalanxx.cdiext.factory.test.ApplicationScopedBeanProducedByFactory;
+import net.phalanxx.cdiext.factory.test.DependentScopedBean;
+import net.phalanxx.cdiext.factory.test.NamedBean;
+import net.phalanxx.cdiext.factory.test.StereotypedBeanWithInjectionPoint;
+import net.phalanxx.cdiext.factory.test.TestFactory;
+import net.phalanxx.cdiext.factory.test.TestStereotype;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;

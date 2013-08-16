@@ -1,5 +1,7 @@
 package net.phalanxx.cdiext.scope;
 
+import java.lang.annotation.Annotation;
+
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -15,9 +17,9 @@ public class DisposeableSingletonContext {
     private @Inject BeanManager beanManager;
 
     /**
-     * If there has already been created a singleton instance for the given type this
-     * instance is returned. Otherwise a new instance is created and put in the
-     * {@link DisposeableSingleton} context.
+     * If there has already been created a singleton instance for the given type this instance is
+     * returned. Otherwise a new instance is created and put in the {@link DisposeableSingleton}
+     * context.
      *
      * @param <T> type of singleton to be created
      * @param type class of singleton to be created
@@ -26,9 +28,11 @@ public class DisposeableSingletonContext {
     public <T> T getSingleton(Class<T> type) {
         T result = null;
         Bean<T> bean = (Bean<T>) beanManager.resolve(beanManager.getBeans(type));
+
         if (bean != null) {
-            CreationalContext<T> creationalContext = beanManager.createCreationalContext(bean);
-            if (creationalContext != null) {
+            Class<? extends Annotation> scope = bean.getScope();
+            if (DisposeableSingleton.class.equals(scope)) {
+                CreationalContext<T> creationalContext = beanManager.createCreationalContext(bean);
                 result = (T) beanManager.getReference(bean, type, creationalContext);
             }
         }
