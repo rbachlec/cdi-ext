@@ -50,7 +50,7 @@
 <li>DisposableSingleton: Works like ApplicationScoped beans but beans can be disposed manually</li>
 <li>AnnotationUtil: Query annotations on AnnotatedType instances</li>
 <li>BeanManagerUtil: Get contextual instances and inject things in unmanaged beans</li>
-</ul><h1>
+</ul><hr><h1>
 <a name="factoryextension" class="anchor" href="#factoryextension"><span class="octicon octicon-link"></span></a>FactoryExtension</h1>
 
 <p>The reason for this CDI extension is the lack of generic producer methods in CDI. You can define qualifiers to call different producer methods on instantiation but you cannot write a producer method responsible for the instantiation of different classes (even if they should be created in the same way).</p>
@@ -61,7 +61,7 @@
 <ol>
 <li>Create a factory by implementing the Factory interface.</li>
 <li>Annotate classes to be created by the factory with @ProducedByFactory.</li>
-</ol><h1>
+</ol><hr><h1>
 <a name="disposablesingleton-scope" class="anchor" href="#disposablesingleton-scope"><span class="octicon octicon-link"></span></a>DisposableSingleton scope</h1>
 
 <p>You need singletons in your CDI application (like ApplicationScoped beans) but you want to drop them at times? Then this extension is the right thing for you.</p>
@@ -73,7 +73,7 @@
 <li>Annotate your singletons with @DisposableSingleton.</li>
 <li>You can drop the singleton from the context by injecting the DisposableSingletonContext and call the disposeSingleton() method.</li>
 <li>But be careful: Already injected instances are not replaced automatically with a new instance on usage.</li>
-</ol><h1>
+</ol><hr><h1>
 <a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h1>
 
 <p>Copyright 2013 Roland Bachlechner</p>
