@@ -2,7 +2,7 @@ cdi-ext is a small collection of CDI extensions and utils that I often need and 
 
 The main features are:
   - FactoryExtension: To be used if producer methods are not sufficient
-  - DisposableSingleton scope: Like ApplicationScoped but beans are disposable manually
+  - DisposableSingleton: Works like ApplicationScoped beans but beans can be disposed manually
   - AnnotationUtil: Query annotations on AnnotatedType instances
   - BeanManagerUtil: Get contextual instances and inject things in unmanaged beans
 
