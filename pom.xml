@@ -72,6 +72,9 @@
                     <verbose>false</verbose>
                     <addSvnKeyWords>false</addSvnKeyWords>
                     <licenseName>apache_v2</licenseName>
+                    <processStartTag>---LICENSE_BEGIN---</processStartTag>
+                    <processEndTag>---LICENSE_END---</processEndTag>
+                    <sectionDelimiter>---</sectionDelimiter>
                     <roots>
                         <root>src/main/java</root>
                         <root>src/test/java</root>
