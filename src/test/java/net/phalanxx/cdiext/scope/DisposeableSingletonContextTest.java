@@ -9,10 +9,10 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
-import net.phalanxx.cdiext.scope.test.AlternativeBean;
-import net.phalanxx.cdiext.scope.test.AnotherDisposeableSingletonBean;
-import net.phalanxx.cdiext.scope.test.ApplicationScopedBean;
-import net.phalanxx.cdiext.scope.test.DisposeableSingletonBean;
+import net.phalanxx.cdiext.beans.AlternativeBean;
+import net.phalanxx.cdiext.beans.AnotherDisposeableSingletonBean;
+import net.phalanxx.cdiext.beans.ApplicationScopedBean;
+import net.phalanxx.cdiext.beans.DisposeableSingletonBean;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;

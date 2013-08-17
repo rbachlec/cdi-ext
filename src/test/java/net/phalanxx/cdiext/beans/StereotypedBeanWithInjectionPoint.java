@@ -1,8 +1,8 @@
-package net.phalanxx.cdiext.factory.test;
+package net.phalanxx.cdiext.beans;
 
 import javax.inject.Inject;
 
-@TestStereotype
+@TestStereotypeApplicationScoped
 public class StereotypedBeanWithInjectionPoint extends AbstractTestBean {
 
     public static final String BEAN_ID = "StereotypedBeanWithInjectionPoint";
@@ -16,6 +16,10 @@ public class StereotypedBeanWithInjectionPoint extends AbstractTestBean {
     @Override
     public String getBeanId() {
         return BEAN_ID;
+    }
+
+    public DependentScopedBean getDependentScopedBean() {
+        return dependentScopedBean;
     }
 
 }

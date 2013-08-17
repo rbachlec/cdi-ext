@@ -1,4 +1,4 @@
-package net.phalanxx.cdiext.scope.test;
+package net.phalanxx.cdiext.beans;
 
 import javax.enterprise.inject.Alternative;
 

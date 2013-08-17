@@ -21,14 +21,13 @@ import javax.enterprise.inject.spi.InjectionTarget;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import net.phalanxx.cdiext.factory.test.AbstractTestBean;
-import net.phalanxx.cdiext.factory.test.ApplicationScopedBean;
-import net.phalanxx.cdiext.factory.test.ApplicationScopedBeanProducedByFactory;
-import net.phalanxx.cdiext.factory.test.DependentScopedBean;
-import net.phalanxx.cdiext.factory.test.NamedBean;
-import net.phalanxx.cdiext.factory.test.StereotypedBeanWithInjectionPoint;
-import net.phalanxx.cdiext.factory.test.TestFactory;
-import net.phalanxx.cdiext.factory.test.TestStereotype;
+import net.phalanxx.cdiext.beans.AbstractTestBean;
+import net.phalanxx.cdiext.beans.ApplicationScopedBean;
+import net.phalanxx.cdiext.beans.ApplicationScopedBeanProducedByFactory;
+import net.phalanxx.cdiext.beans.DependentScopedBean;
+import net.phalanxx.cdiext.beans.NamedBean;
+import net.phalanxx.cdiext.beans.StereotypedBeanWithInjectionPoint;
+import net.phalanxx.cdiext.beans.TestStereotypeApplicationScoped;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -55,7 +54,7 @@ public class GeneratedBeanTest {
     @Deployment
     public static JavaArchive createDeployment() {
         return ShrinkWrap.create(JavaArchive.class)
-                         .addPackage(TestFactory.class.getPackage())
+                         .addPackage(AbstractTestBean.class.getPackage())
                          .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
@@ -74,7 +73,7 @@ public class GeneratedBeanTest {
         Set<Class<? extends Annotation>> stereotypes = stereotypedBeanWithInjectionPoint.getStereotypes();
         assertThat(stereotypes).isNotEmpty();
         assertThat(stereotypes.size()).isEqualTo(1);
-        assertThat(stereotypes).contains(TestStereotype.class);
+        assertThat(stereotypes).contains(TestStereotypeApplicationScoped.class);
     }
 
     @Test

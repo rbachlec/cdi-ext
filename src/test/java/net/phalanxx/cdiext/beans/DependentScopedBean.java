@@ -1,4 +1,4 @@
-package net.phalanxx.cdiext.factory.test;
+package net.phalanxx.cdiext.beans;
 
 public class DependentScopedBean extends AbstractTestBean {
 

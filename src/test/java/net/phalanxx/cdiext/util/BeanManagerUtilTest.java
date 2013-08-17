@@ -6,10 +6,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import net.phalanxx.cdiext.util.test.AlternativeBean;
-import net.phalanxx.cdiext.util.test.DependentScopedBean;
-import net.phalanxx.cdiext.util.test.NamedBean;
-import net.phalanxx.cdiext.util.test.TestBean;
+import net.phalanxx.cdiext.beans.AbstractTestBean;
+import net.phalanxx.cdiext.beans.AlternativeBean;
+import net.phalanxx.cdiext.beans.DependentScopedBean;
+import net.phalanxx.cdiext.beans.NamedBean;
+import net.phalanxx.cdiext.beans.StereotypedBeanWithInjectionPoint;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -29,7 +30,7 @@ public class BeanManagerUtilTest {
     public static JavaArchive createDeployment() {
         return ShrinkWrap.create(JavaArchive.class)
                          .addClass(BeanManagerUtil.class)
-                         .addPackage(DependentScopedBean.class.getPackage())
+                         .addPackage(AbstractTestBean.class.getPackage())
                          .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
@@ -42,7 +43,7 @@ public class BeanManagerUtilTest {
 
     @Test
     public void getContextualInstanceFindsNamedBean() {
-        TestBean theBean = beanManagerUtil.getContextualInstance(TestBean.class, new NamedLiteral("SpecialBean"));
+        AbstractTestBean theBean = beanManagerUtil.getContextualInstance(AbstractTestBean.class, new NamedLiteral("SpecialBean"));
         assertThat(theBean).isNotNull();
         assertThat(theBean.getClass()).isEqualTo(NamedBean.class);
     }
@@ -62,24 +63,24 @@ public class BeanManagerUtilTest {
 
     @Test
     public void getContextualInstancesFindsThree() {
-        List<TestBean> beans = beanManagerUtil.getContextualInstances(TestBean.class);
+        List<AbstractTestBean> beans = beanManagerUtil.getContextualInstances(AbstractTestBean.class);
         assertThat(beans).isNotEmpty();
-        assertThat(beans.size()).isEqualTo(3);
+        assertThat(beans.size()).isEqualTo(8);
     }
 
     @Test
     public void getContextualInstancesFindsOneNamedBean() {
-        List<TestBean> beans = beanManagerUtil.getContextualInstances(TestBean.class, new NamedLiteral("SpecialBean"));
+        List<AbstractTestBean> beans = beanManagerUtil.getContextualInstances(AbstractTestBean.class, new NamedLiteral("SpecialBean"));
         assertThat(beans).isNotEmpty();
         assertThat(beans.size()).isEqualTo(1);
     }
 
     @Test
     public void doInjectionsForUnmanagedObject() {
-        AlternativeBean alternativeBean = new AlternativeBean();
-        assertThat(alternativeBean.getDependentScopedBean()).isNull();
-        beanManagerUtil.doInjectionsForUnmanagedObject(alternativeBean);
-        assertThat(alternativeBean.getDependentScopedBean()).isNotNull();
+        StereotypedBeanWithInjectionPoint beanWithInjectionPoint = new StereotypedBeanWithInjectionPoint();
+        assertThat(beanWithInjectionPoint.getDependentScopedBean()).isNull();
+        beanManagerUtil.doInjectionsForUnmanagedObject(beanWithInjectionPoint);
+        assertThat(beanWithInjectionPoint.getDependentScopedBean()).isNotNull();
     }
 
 }

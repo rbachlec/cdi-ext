@@ -1,4 +1,4 @@
-package net.phalanxx.cdiext.factory.test;
+package net.phalanxx.cdiext.beans;
 
 import javax.enterprise.context.ApplicationScoped;
 
