@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  * the type to be created is not known at compile time. With this extension someone can easily
  * implement a generic factory for a specific class.
  *
- * @author Roland Bachlechner
+ * @author rbachlec
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

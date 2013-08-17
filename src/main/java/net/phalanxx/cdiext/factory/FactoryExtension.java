@@ -20,6 +20,8 @@ import net.phalanxx.cdiext.util.AnnotationUtil;
  * instantiation of the annotated class. Sometimes it's difficult to write a producer method because
  * the type to be created is not known at compile time. So someone can write a generic factory for a
  * specific class.
+ *
+ * @author rbachlec
  */
 public class FactoryExtension implements Extension {
 
@@ -37,7 +39,7 @@ public class FactoryExtension implements Extension {
         for (final AnnotatedType<Object> annotatedType : toBeProducedByFactory) {
             InjectionTarget<Object> injectionTarget = beanManager.createInjectionTarget(annotatedType);
 
-            Bean<Object> bean = new GeneratedBean<>(annotatedType, injectionTarget, beanManager);
+            Bean<Object> bean = new FactoryProducedBean<>(annotatedType, injectionTarget, beanManager);
             abd.addBean(bean);
         }
 

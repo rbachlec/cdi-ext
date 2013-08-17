@@ -38,7 +38,7 @@ public class FactoryExtensionTest {
                          .addClass(ProducedByFactory.class)
                          .addClass(Factory.class)
                          .addClass(FactoryExtension.class)
-                         .addClass(GeneratedBean.class)
+                         .addClass(FactoryProducedBean.class)
                          .addPackage(AbstractTestBean.class.getPackage())
                          .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }

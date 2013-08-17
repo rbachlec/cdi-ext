@@ -185,7 +185,7 @@ public class GeneratedBeanTest {
     private <T> Bean<T> createGeneratedBean(Class<T> clazz) {
         AnnotatedType<T> annotatedType = beanManager.createAnnotatedType(clazz);
         InjectionTarget<T> injectionTarget = beanManager.createInjectionTarget(annotatedType);
-        return new GeneratedBean<>(annotatedType, injectionTarget, beanManager);
+        return new FactoryProducedBean<>(annotatedType, injectionTarget, beanManager);
     }
 
 }
