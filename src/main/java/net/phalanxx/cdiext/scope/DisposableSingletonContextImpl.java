@@ -13,36 +13,37 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Context implementation for the {@link DisposeableSingleton} scope.
+ * Context implementation for the {@link DisposableSingleton} scope.
  *
  * @author rbachlec
  */
-public class DisposeableSingletonContextImpl implements Context {
+public class DisposableSingletonContextImpl implements Context {
 
-    private Logger log = LoggerFactory.getLogger(DisposeableSingletonContextImpl.class);
+    private final Logger log = LoggerFactory.getLogger(DisposableSingletonContextImpl.class);
 
-    private ConcurrentHashMap<Bean, ContextualInstance<?>> beanStore = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Bean<?>, ContextualInstance<?>> beanStore = new ConcurrentHashMap<>();
 
     /** {@inheritDoc} */
     @Override
     public Class<? extends Annotation> getScope() {
-        return DisposeableSingleton.class;
+        return DisposableSingleton.class;
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     @Override
-    public <T> T get(Contextual<T> contextual, CreationalContext<T> creationalContext) {
-        Bean bean = (Bean) contextual;
+    public <T> T get(final Contextual<T> contextual, final CreationalContext<T> creationalContext) {
+        Bean<T> bean = (Bean<T>) contextual;
 
         T instance;
         ContextualInstance<?> contextualInstance = beanStore.get(bean);
         if (contextualInstance == null) {
-            log.debug("Creating instance of bean " + bean.toString() + ".");
+            log.debug("Creating instance of bean {}.", bean.toString());
             instance = contextual.create(creationalContext);
-            contextualInstance = new DisposeableSingletonInstance(instance, creationalContext);
+            contextualInstance = new DisposableSingletonInstance<>(instance, creationalContext);
             beanStore.put(bean, contextualInstance);
         } else {
-            log.debug("Found existing instance of bean " + bean.toString() + ".");
+            log.debug("Found existing instance of bean {}.", bean.toString());
             instance = (T) contextualInstance.getInstance();
         }
 
@@ -50,10 +51,11 @@ public class DisposeableSingletonContextImpl implements Context {
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     @Override
-    public <T> T get(Contextual<T> contextual) {
-         ContextualInstance<?> contextualInstance = beanStore.get(contextual);
-         return contextualInstance != null ? (T) contextualInstance.getInstance() : null;
+    public <T> T get(final Contextual<T> contextual) {
+        ContextualInstance<?> contextualInstance = beanStore.get(contextual);
+        return contextualInstance == null ? null : (T) contextualInstance.getInstance();
     }
 
     /** {@inheritDoc} */
@@ -63,23 +65,23 @@ public class DisposeableSingletonContextImpl implements Context {
     }
 
     /**
-     * Removes a given instance from the {@link DisposeableSingleton} context.
+     * Removes a given instance from the {@link DisposableSingleton} context.
      *
      * @param <T> type of instance to be disposed
      * @param instance instance to be disposed
      */
-    protected <T> void dispose(T instance) {
+    protected <T> void dispose(final T instance) {
         if (!contains(instance)) {
             throw new IllegalArgumentException("The given instance could not be found in " +
-                                               "the DisposeableSingletonContext.");
+                                               "the DisposableSingletonContext.");
         }
 
-        for (Map.Entry<Bean, ContextualInstance<?>> entry : beanStore.entrySet()) {
-            Bean bean = entry.getKey();
+        for (Map.Entry<Bean<?>, ContextualInstance<?>> entry : beanStore.entrySet()) {
+            Bean<?> bean = entry.getKey();
             ContextualInstance<? extends Object> contextualInstance = entry.getValue();
 
             if (contextualInstance.getInstance() == instance) {
-                log.debug("Disposing instance of bean " + bean.toString() + ".");
+                log.debug("Disposing instance of bean {}.", bean.toString());
                 contextualInstance.getCreationalContext().release();
                 beanStore.remove(bean);
                 break;
@@ -88,33 +90,34 @@ public class DisposeableSingletonContextImpl implements Context {
     }
 
     /**
-     * Checks if the given object is in the {@link DisposeableSingleton} context.
+     * Checks if the given object is in the {@link DisposableSingleton} context.
      *
      * @param <T> type of the object to search for
-     * @param singleton object to be searched for
+     * @param instance object to be searched for
      * @return true/false
      */
-    protected <T> Boolean contains(T instance) {
-        for (Map.Entry<Bean, ContextualInstance<?>> entry : beanStore.entrySet()) {
+    protected <T> Boolean contains(final T instance) {
+        Boolean contains = false;
+        for (Map.Entry<Bean<?>, ContextualInstance<?>> entry : beanStore.entrySet()) {
             ContextualInstance<? extends Object> contextualInstance = entry.getValue();
             if (contextualInstance.getInstance() == instance) {
-                return true;
+                contains = true;
             }
         }
 
-        return false;
+        return contains;
     }
 
     /**
-     * A container class for disposeable singleton instances.
+     * A container class for disposable singleton instances.
      *
      * @param <T> type of instance in container
      */
-    private class DisposeableSingletonInstance<T> implements ContextualInstance<T> {
-        private T instance;
-        private CreationalContext<T> creationalContext;
+    private static class DisposableSingletonInstance<T> implements ContextualInstance<T> {
+        private final T instance;
+        private final CreationalContext<T> creationalContext;
 
-        public DisposeableSingletonInstance(T instance, CreationalContext<T> creationalContext) {
+        public DisposableSingletonInstance(final T instance, final CreationalContext<T> creationalContext) {
             this.instance = instance;
             this.creationalContext = creationalContext;
         }

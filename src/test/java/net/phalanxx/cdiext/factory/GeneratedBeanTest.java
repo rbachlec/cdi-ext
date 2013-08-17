@@ -1,6 +1,7 @@
 package net.phalanxx.cdiext.factory;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -164,10 +165,13 @@ public class GeneratedBeanTest {
 
     @Test
     public void destroy() {
-        CreationalContext<StereotypedBeanWithInjectionPoint> creationalContext =
-                beanManager.createCreationalContext(stereotypedBeanWithInjectionPoint);
-        stereotypedBeanWithInjectionPoint.destroy(stereotyped, creationalContext);
-
+        try {
+            CreationalContext<StereotypedBeanWithInjectionPoint> creationalContext =
+                    beanManager.createCreationalContext(stereotypedBeanWithInjectionPoint);
+            stereotypedBeanWithInjectionPoint.destroy(stereotyped, creationalContext);
+        } catch(Exception ex) {
+            fail("Destroy should not throw an exception.");
+        }
     }
 
     private List<Class<? extends Annotation>> getClasses(Set<Annotation> qualifiers) {

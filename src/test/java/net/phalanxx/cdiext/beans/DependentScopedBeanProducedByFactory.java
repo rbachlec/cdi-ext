@@ -1,8 +1,8 @@
 package net.phalanxx.cdiext.beans;
 
-import net.phalanxx.cdiext.factory.CreatedByFactory;
+import net.phalanxx.cdiext.factory.ProducedByFactory;
 
-@CreatedByFactory(factory=TestFactory.class)
+@ProducedByFactory(factory=TestFactory.class)
 public class DependentScopedBeanProducedByFactory extends AbstractTestBean {
 
     public static final String BEAN_ID = "DependentScopedBeanProducedByFactory";

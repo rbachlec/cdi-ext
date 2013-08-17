@@ -35,7 +35,7 @@ public class FactoryExtensionTest {
     @Deployment
     public static JavaArchive createDeployment() {
         return ShrinkWrap.create(JavaArchive.class)
-                         .addClass(CreatedByFactory.class)
+                         .addClass(ProducedByFactory.class)
                          .addClass(Factory.class)
                          .addClass(FactoryExtension.class)
                          .addClass(GeneratedBean.class)

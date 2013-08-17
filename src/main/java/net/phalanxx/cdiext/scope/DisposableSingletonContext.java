@@ -12,26 +12,27 @@ import javax.inject.Inject;
  *
  * @author rbachlec
  */
-public class DisposeableSingletonContext {
+public class DisposableSingletonContext {
 
-    private @Inject BeanManager beanManager;
+    @Inject private BeanManager beanManager;
 
     /**
      * If there has already been created a singleton instance for the given type this instance is
-     * returned. Otherwise a new instance is created and put in the {@link DisposeableSingleton}
+     * returned. Otherwise a new instance is created and put in the {@link DisposableSingleton}
      * context.
      *
      * @param <T> type of singleton to be created
      * @param type class of singleton to be created
-     * @return disposeable singleton instance
+     * @return disposable singleton instance
      */
-    public <T> T getSingleton(Class<T> type) {
+    @SuppressWarnings("unchecked")
+    public <T> T getSingleton(final Class<T> type) {
         T result = null;
         Bean<T> bean = (Bean<T>) beanManager.resolve(beanManager.getBeans(type));
 
         if (bean != null) {
             Class<? extends Annotation> scope = bean.getScope();
-            if (DisposeableSingleton.class.equals(scope)) {
+            if (DisposableSingleton.class.equals(scope)) {
                 CreationalContext<T> creationalContext = beanManager.createCreationalContext(bean);
                 result = (T) beanManager.getReference(bean, type, creationalContext);
             }
@@ -41,27 +42,27 @@ public class DisposeableSingletonContext {
 
     /**
      * Disposes a given singleton instance. If the given object is not present in the
-     * {@link DisposeableSingleton} context an exception is thrown.
+     * {@link DisposableSingleton} context an exception is thrown.
      *
      * @param <T> type of the given singleton
-     * @param singleton disposeable singleton instance
+     * @param singleton disposable singleton instance
      */
-    public <T> void disposeSingleton(T singleton) {
-        DisposeableSingletonContextImpl context =
-                (DisposeableSingletonContextImpl) beanManager.getContext(DisposeableSingleton.class);
+    public <T> void disposeSingleton(final T singleton) {
+        DisposableSingletonContextImpl context =
+                (DisposableSingletonContextImpl) beanManager.getContext(DisposableSingleton.class);
         context.dispose(singleton);
     }
 
     /**
-     * Checks if the given object is in the {@link DisposeableSingleton} context.
+     * Checks if the given object is in the {@link DisposableSingleton} context.
      *
      * @param <T> type of the object to search for
      * @param singleton object to be searched for
      * @return true/false
      */
-    public <T> Boolean contains(T singleton) {
-        DisposeableSingletonContextImpl context =
-                (DisposeableSingletonContextImpl) beanManager.getContext(DisposeableSingleton.class);
+    public <T> Boolean contains(final T singleton) {
+        DisposableSingletonContextImpl context =
+                (DisposableSingletonContextImpl) beanManager.getContext(DisposableSingleton.class);
         return context.contains(singleton);
     }
 

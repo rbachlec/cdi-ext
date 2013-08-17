@@ -10,9 +10,9 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
 import net.phalanxx.cdiext.beans.AlternativeBean;
-import net.phalanxx.cdiext.beans.AnotherDisposeableSingletonBean;
+import net.phalanxx.cdiext.beans.AnotherDisposableSingletonBean;
 import net.phalanxx.cdiext.beans.ApplicationScopedBean;
-import net.phalanxx.cdiext.beans.DisposeableSingletonBean;
+import net.phalanxx.cdiext.beans.DisposableSingletonBean;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -24,21 +24,21 @@ import org.junit.runner.RunWith;
 
 
 @RunWith(Arquillian.class)
-public class DisposeableSingletonContextTest {
+public class DisposableSingletonContextTest {
 
     @Inject BeanManager beanManager;
-    @Inject DisposeableSingletonContext context;
+    @Inject DisposableSingletonContext context;
 
-    @Inject DisposeableSingletonBean singletonBean;
-    @Inject DisposeableSingletonBean singletonBean2;
-    @Inject AnotherDisposeableSingletonBean anotherSingletonBean;
+    @Inject DisposableSingletonBean singletonBean;
+    @Inject DisposableSingletonBean singletonBean2;
+    @Inject AnotherDisposableSingletonBean anotherSingletonBean;
     @Inject ApplicationScopedBean applicationScopedBean;
 
     @Deployment
     public static JavaArchive createDeployment() {
         return ShrinkWrap.create(JavaArchive.class)
-                         .addPackage(DisposeableSingletonContext.class.getPackage())
-                         .addPackage(DisposeableSingletonBean.class.getPackage())
+                         .addPackage(DisposableSingletonContext.class.getPackage())
+                         .addPackage(DisposableSingletonBean.class.getPackage())
                          .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
@@ -63,7 +63,7 @@ public class DisposeableSingletonContextTest {
     @Test
     public void contextReturnsExistingBean() {
         assertThat(singletonBean).isNotNull();
-        DisposeableSingletonBean theBean = context.getSingleton(DisposeableSingletonBean.class);
+        DisposableSingletonBean theBean = context.getSingleton(DisposableSingletonBean.class);
         assertThat(singletonBean).isEqualTo(theBean);
     }
 
@@ -96,13 +96,13 @@ public class DisposeableSingletonContextTest {
         context.disposeSingleton(singletonBean);
         assertThat(context.contains(singletonBean)).isFalse();
 
-        DisposeableSingletonBean theBean = context.getSingleton(DisposeableSingletonBean.class);
+        DisposableSingletonBean theBean = context.getSingleton(DisposableSingletonBean.class);
         assertThat(singletonBean).isNotEqualTo(theBean);
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void disposingAnUnmanagedSingletonBeanThrowsException() {
-        context.disposeSingleton(new DisposeableSingletonBean());
+        context.disposeSingleton(new DisposableSingletonBean());
     }
 
     @Test(expected=IllegalArgumentException.class)
@@ -126,7 +126,7 @@ public class DisposeableSingletonContextTest {
     public void contextReturnsExistingInstanceSuccessfully() {
         Object beanInstance = getContextualInstance();
         assertThat(beanInstance).isNotNull();
-        assertThat(beanInstance instanceof DisposeableSingletonBean).isTrue();
+        assertThat(beanInstance instanceof DisposableSingletonBean).isTrue();
     }
 
     @Test
@@ -137,12 +137,12 @@ public class DisposeableSingletonContextTest {
     }
 
     private Object getContextualInstance() {
-        Context theContext = beanManager.getContext(DisposeableSingleton.class);
+        Context theContext = beanManager.getContext(DisposableSingleton.class);
 
-        Set<Bean<?>> disposeableSingletonBean = beanManager.getBeans(DisposeableSingletonBean.class);
-        assertThat(disposeableSingletonBean).isNotNull();
-        assertThat(disposeableSingletonBean.size()).isEqualTo(1);
-        Bean<?> theBean = disposeableSingletonBean.iterator().next();
+        Set<Bean<?>> disposableSingletonBean = beanManager.getBeans(DisposableSingletonBean.class);
+        assertThat(disposableSingletonBean).isNotNull();
+        assertThat(disposableSingletonBean.size()).isEqualTo(1);
+        Bean<?> theBean = disposableSingletonBean.iterator().next();
 
         Object beanInstance = theContext.get(theBean);
         return beanInstance;

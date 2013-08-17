@@ -2,6 +2,7 @@ package net.phalanxx.cdiext.factory;
 
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
+
 import org.slf4j.Logger;
 
 /**
@@ -18,7 +19,7 @@ public class Slf4jLoggerFactory {
      * @return slf4j logger instance
      */
     @Produces
-    public Logger createLogger(InjectionPoint injectionPoint) {
+    public Logger createLogger(final InjectionPoint injectionPoint) {
         String name = injectionPoint.getMember().getDeclaringClass().getName();
         return org.slf4j.LoggerFactory.getLogger(name);
     }

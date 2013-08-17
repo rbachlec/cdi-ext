@@ -1,7 +1,7 @@
 package net.phalanxx.cdiext.factory;
 
 /**
- * Classes annotated by {@link CreatedByFactory} are created by an implementation of this interface.
+ * Classes annotated by {@link ProducedByFactory} are created by an implementation of this interface.
  *
  * @author rbachlec
  */

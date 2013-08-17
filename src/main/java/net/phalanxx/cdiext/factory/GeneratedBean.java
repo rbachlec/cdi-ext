@@ -111,9 +111,10 @@ public class GeneratedBean<T> implements Bean<T> {
 
     @Override
     public final T create(final CreationalContext<T> creationalContext) {
-        CreatedByFactory annotation = AnnotationUtil.getAnnotation(annotatedType, beanManager, CreatedByFactory.class);
+        ProducedByFactory annotation = AnnotationUtil.getAnnotation(annotatedType, beanManager, ProducedByFactory.class);
         if (annotation == null) {
-            throw new IllegalArgumentException("Class " + annotatedType.getClass() + " does not define a factory class.");
+            throw new IllegalArgumentException("Class " + annotatedType.getClass() +
+                                               " does not define a factory class.");
         }
 
         Factory factory = BeanManagerUtil.getContextualInstance(beanManager, annotation.factory());

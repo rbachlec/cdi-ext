@@ -20,17 +20,18 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class BeanManagerUtil {
 
-    private @Inject BeanManager beanManager;
+    @Inject private BeanManager beanManager;
 
     /**
      * Get a single CDI managed instance of a specific class. Return only the first result if multiple beans are
      * available.
      *
+     * @param <T> type of the contextual instance to return
      * @param type The class for which to return an instance.
      * @param qualifiers List of qualifier annotations
      * @return The managed instance, or null if none could be provided.
      */
-    public <T> T getContextualInstance(final Class<T> type, Annotation... qualifiers) {
+    public <T> T getContextualInstance(final Class<T> type, final Annotation... qualifiers) {
         return getContextualInstance(beanManager, type, qualifiers);
     }
 
@@ -40,6 +41,7 @@ public class BeanManagerUtil {
      * <p/>
      * <b>NOTE:</b> Using this method should be avoided if container provided injection is available.
      *
+     * @param <T> type of the contextual instance to return
      * @param beanManager The bean manager with which to perform the lookup.
      * @param type The class for which to return an instance.
      * @param qualifiers List of qualifier annotations
@@ -47,7 +49,7 @@ public class BeanManagerUtil {
      */
     @SuppressWarnings("unchecked")
     public static <T> T getContextualInstance(final BeanManager beanManager, final Class<T> type,
-                                              Annotation... qualifiers) {
+                                              final Annotation... qualifiers) {
         T result = null;
         Bean<T> bean = (Bean<T>) beanManager.resolve(beanManager.getBeans(type, qualifiers));
         if (bean != null) {
@@ -61,11 +63,13 @@ public class BeanManagerUtil {
      * Get all CDI managed instances of a specific class. Return results in a
      * {@link List} in no specific order.
      *
+     * @param <T> type of the contextual instance to return
      * @param type The class for which to return instances.
      * @param qualifiers List of qualifier annotations
+     * @return list of contextual instances matching the parameters
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T> getContextualInstances(final Class<T> type, Annotation... qualifiers) {
+    public <T> List<T> getContextualInstances(final Class<T> type, final Annotation... qualifiers) {
         List<T> result = new ArrayList<>();
         for (Bean<?> bean : beanManager.getBeans(type, qualifiers)) {
             CreationalContext<T> context = (CreationalContext<T>) beanManager.createCreationalContext(bean);
@@ -80,19 +84,19 @@ public class BeanManagerUtil {
      * @param <T> type of object to do injection for
      * @param object  object to do injection for
      */
-    public <T> void doInjectionsForUnmanagedObject(T object) {
+    public <T> void doInjectionsForUnmanagedObject(final T object) {
         doInjectionsForUnmanagedObject(beanManager, object);
     }
 
     /**
      * Does injection magic on the given object.
      *
-     * @param beanManager The bean manager with which to perform the lookup.
      * @param <T> type of object to do injection for
+     * @param beanManager The bean manager with which to perform the lookup.
      * @param object  object to do injection for
      */
     @SuppressWarnings("unchecked")
-    public static <T> void doInjectionsForUnmanagedObject(final BeanManager beanManager, T object) {
+    public static <T> void doInjectionsForUnmanagedObject(final BeanManager beanManager, final T object) {
         AnnotatedType<T> type = (AnnotatedType<T>) beanManager.createAnnotatedType(object.getClass());
         InjectionTarget<T> target = beanManager.createInjectionTarget(type);
         CreationalContext<T> creationalContext = beanManager.createCreationalContext(null);

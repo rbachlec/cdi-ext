@@ -10,6 +10,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
 
 /**
+ * Util with methods to query for annotations and stuff.
  *
  * @author rbachlec
  */
@@ -19,12 +20,24 @@ public final class AnnotationUtil {
         // utility class
     }
 
+    /**
+     * Returns a given annotation on an annotated type instance. If the annotation is found
+     * more than once (e.g. because it's also contained in a stereotype) the returned annoation is
+     * not deterministic. So make sure to prevent such a situation.
+     *
+     * @param <T> type of the annotated type
+     * @param annotatedType annotated type instance
+     * @param beanManager the bean manager
+     * @param annotationType class of the annotation to query for
+     * @return annotation or null if not found
+     */
     @SuppressWarnings("unchecked")
-    public static <T extends Annotation> T getAnnotation(AnnotatedType<?> annotatedType, BeanManager beanManager,
+    public static <T extends Annotation> T getAnnotation(final AnnotatedType<?> annotatedType,
+                                                         final BeanManager beanManager,
                                                          final Class<T> annotationType) {
         Set<Annotation> annotations = findAnnotations(annotatedType, beanManager, new AnnotationFilter() {
             @Override
-            public boolean matches(Annotation annotation) {
+            public boolean matches(final Annotation annotation) {
                 return annotation.annotationType().equals(annotationType);
             }
         }, true);
@@ -32,15 +45,31 @@ public final class AnnotationUtil {
         return (T) (annotations.isEmpty() ? null : annotations.toArray()[0]);
     }
 
-    public static boolean isAnnotationPresent(AnnotatedType<?> annotatedType, BeanManager beanManager,
-                                              Class<? extends Annotation> annotationType) {
+    /**
+     * Searches for the given annotation and returns if found.
+     *
+     * @param annotatedType annotated type instance
+     * @param beanManager the bean manager
+     * @param annotationType class of the annotation to query for
+     * @return true/false
+     */
+    public static boolean isAnnotationPresent(final AnnotatedType<?> annotatedType,
+                                              final BeanManager beanManager,
+                                              final Class<? extends Annotation> annotationType) {
         return getAnnotation(annotatedType, beanManager, annotationType) != null;
     }
 
-    public static Annotation getScope(AnnotatedType<?> annotatedType, final BeanManager beanManager) {
+    /**
+     * Returns the scope of the given annotated type instance.
+     *
+     * @param annotatedType annotated type instance
+     * @param beanManager the bean manager
+     * @return the scope of the given annotated type
+     */
+    public static Annotation getScope(final AnnotatedType<?> annotatedType, final BeanManager beanManager) {
         Set<Annotation> annotations = findAnnotations(annotatedType, beanManager, new AnnotationFilter() {
             @Override
-            public boolean matches(Annotation annotation) {
+            public boolean matches(final Annotation annotation) {
                 return beanManager.isScope(annotation.annotationType());
             }
         }, true);
@@ -48,10 +77,17 @@ public final class AnnotationUtil {
         return (Annotation) (annotations.isEmpty() ? new AnnotationLiteral<Dependent>() {} : annotations.toArray()[0]);
     }
 
-    public static Set<Annotation> getStereotypes(AnnotatedType<?> annotatedType, final BeanManager beanManager) {
+    /**
+     * Returns the stereotypes of the given annotated type instance.
+     *
+     * @param annotatedType annotated type instance
+     * @param beanManager the bean manager
+     * @return the stereotypes of the given annotated type
+     */
+    public static Set<Annotation> getStereotypes(final AnnotatedType<?> annotatedType, final BeanManager beanManager) {
         Set<Annotation> annotations = findAnnotations(annotatedType, beanManager, new AnnotationFilter() {
             @Override
-            public boolean matches(Annotation annotation) {
+            public boolean matches(final Annotation annotation) {
                 return beanManager.isStereotype(annotation.annotationType());
             }
         }, false);
@@ -59,10 +95,17 @@ public final class AnnotationUtil {
         return annotations;
     }
 
-    public static Set<Annotation> getQualifiers(AnnotatedType<?> annotatedType, final BeanManager beanManager) {
+    /**
+     * Returns the qualifiers of the given annotated type instance.
+     *
+     * @param annotatedType annotated type instance
+     * @param beanManager the bean manager
+     * @return the qualifiers of the given annotated type
+     */
+    public static Set<Annotation> getQualifiers(final AnnotatedType<?> annotatedType, final BeanManager beanManager) {
         Set<Annotation> annotations = findAnnotations(annotatedType, beanManager, new AnnotationFilter() {
             @Override
-            public boolean matches(Annotation annotation) {
+            public boolean matches(final Annotation annotation) {
                 return beanManager.isQualifier(annotation.annotationType());
             }
         }, false);
@@ -76,18 +119,20 @@ public final class AnnotationUtil {
      * @param annotatedType annotated type to search for matching annotations
      * @param beanManager bean manager
      * @param filter filter implementation to search for annotations
-     * @param unique there can only be one matching annotation
+     * @param unique there should only be returned one annotation
      * @return list of matching annotations
      */
-    private static Set<Annotation> findAnnotations(AnnotatedType<?> annotatedType, BeanManager beanManager,
-                                                   AnnotationFilter filter, Boolean unique) {
+    private static Set<Annotation> findAnnotations(final AnnotatedType<?> annotatedType,
+                                                   final BeanManager beanManager,
+                                                   final AnnotationFilter filter,
+                                                   final Boolean unique) {
         Set<Annotation> matchingAnnotations = new HashSet<>();
 
         Set<Annotation> annotations = annotatedType.getAnnotations();
         for (Annotation annotation : annotations) {
             matchingAnnotations.addAll(findMatchingAnnotations(annotation, beanManager, filter, unique));
 
-            if (unique && matchingAnnotations.size() > 0) {
+            if (unique && !matchingAnnotations.isEmpty()) {
                 break;
             }
         }
@@ -104,8 +149,10 @@ public final class AnnotationUtil {
      * @param filter filter implementation to search for annotations
      * @return list of matching annotations
      */
-    private static Set<Annotation> findMatchingAnnotations(Annotation annotation, BeanManager beanManager,
-                                                           AnnotationFilter filter, Boolean unique) {
+    private static Set<Annotation> findMatchingAnnotations(final Annotation annotation,
+                                                           final BeanManager beanManager,
+                                                           final AnnotationFilter filter,
+                                                           final Boolean unique) {
         Set<Annotation> matchingAnnotations = new HashSet<>();
 
         Class<? extends Annotation> annotationType = annotation.annotationType();
@@ -114,19 +161,15 @@ public final class AnnotationUtil {
             matchingAnnotations.add(annotation);
         }
 
-        if (!unique || matchingAnnotations.isEmpty()) {
-            if (beanManager.isStereotype(annotationType)) {
-                for (Annotation stereotype : beanManager.getStereotypeDefinition(annotationType)) {
-                    matchingAnnotations.addAll(findMatchingAnnotations(stereotype, beanManager, filter, unique));
+        if ((!unique || matchingAnnotations.isEmpty()) && beanManager.isStereotype(annotationType)) {
+            for (Annotation stereotype : beanManager.getStereotypeDefinition(annotationType)) {
+                matchingAnnotations.addAll(findMatchingAnnotations(stereotype, beanManager, filter, unique));
 
-                    if (unique && !matchingAnnotations.isEmpty()) {
-                        break;
-                    }
+                if (unique && !matchingAnnotations.isEmpty()) {
+                    break;
                 }
             }
         }
-
-
 
         return matchingAnnotations;
     }
@@ -135,6 +178,13 @@ public final class AnnotationUtil {
      * Interface for filter used for searching annotations.
      */
     private interface AnnotationFilter {
+
+        /**
+         * True if the given annotation matches the filter.
+         *
+         * @param annotation annotation to be queried
+         * @return true/false
+         */
         boolean matches(Annotation annotation);
     }
 

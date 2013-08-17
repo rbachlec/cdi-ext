@@ -2,10 +2,10 @@ package net.phalanxx.cdiext.beans;
 
 import javax.inject.Named;
 
-import net.phalanxx.cdiext.factory.CreatedByFactory;
+import net.phalanxx.cdiext.factory.ProducedByFactory;
 
 @Named("SpecialFactoryProducedBean")
-@CreatedByFactory(factory=TestFactory.class)
+@ProducedByFactory(factory=TestFactory.class)
 public class NamedBeanProducedByFactory extends AbstractTestBean {
 
     public static final String BEAN_ID = "NamedBeanProducedByFactory";

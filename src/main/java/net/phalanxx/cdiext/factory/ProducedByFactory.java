@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface CreatedByFactory {
+public @interface ProducedByFactory {
 
     /**
      * The class of the factory to be used for creation of annotated types.

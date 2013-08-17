@@ -9,12 +9,12 @@ import javax.inject.Scope;
 
 /**
  * Scope containing singletons that can be disposed manually by using an injected instance of
- * {@link DisposeableSingletonContext}.
+ * {@link DisposableSingletonContext}.
  *
  * @author rbachlec
  */
 @Scope
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
-public @interface DisposeableSingleton {
+public @interface DisposableSingleton {
 }
